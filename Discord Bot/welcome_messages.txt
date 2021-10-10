@@ -1,0 +1,4 @@
+**${member.user.username}** alunizó al servidor. Bienvenido!!@@@
+El nuevo retador **${member.user.username}** a entrado al ring.
+Preparense para el combate!!!@@@
+**${member.user.username}** spawneó en el servidor. Amigo o Enemigo?@@@
