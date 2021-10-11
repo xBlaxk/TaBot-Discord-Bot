@@ -1,5 +1,7 @@
+const config = require("../../settings.json");
+
 module.exports = (client, Discord, message)=> {
-    const prefix = ">"; //Command Prefix
+    const prefix = config.prefix; //Command Prefix
 
     if(!message.content.startsWith(prefix) || message.author.bot) return;
 
