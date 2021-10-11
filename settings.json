@@ -1,4 +1,4 @@
 {
-    "Prefix": ">",
-    "Token": "Bot-token-goes-here"
+    "prefix": ">",
+    "token": "bot-token-goes-here"
 }
