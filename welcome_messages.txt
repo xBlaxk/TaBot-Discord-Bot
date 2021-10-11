@@ -2,3 +2,4 @@
 El nuevo retador **${member.user.username}** ha entrado al ring.
 Preparense para el combate!!!@@@
 **${member.user.username}** spawneó en el servidor. Amigo o Enemigo?@@@
+/summon **${member.user.username}**@@@

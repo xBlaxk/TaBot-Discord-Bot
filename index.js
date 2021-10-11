@@ -1,6 +1,7 @@
 //Requires nodes
 const {Client, Intents} = require("discord.js"); 
 const Discord = require('discord.js');
+const config = require("./settings.json");
 
 //Bot Intents
 const myIntents = new Intents(); // Declare and incialize myIntents with a null Intents class
@@ -21,4 +22,4 @@ handlers.forEach((handler) => {
 
 
 // Logs the client in, establishing a websocket connection to Discord.
-client.login("ODk1NTAwNTE4Mjg0MjA2MTIw.YV5d2Q.fG_L815kHU6MnL9lxfy9-YnX46w");
+client.login(config.token);

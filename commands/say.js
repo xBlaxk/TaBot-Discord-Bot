@@ -1,6 +1,3 @@
-const {User} = require("discord.js");
-const guildMemberAdd = require("../events/guild/guildMemberAdd");
-
 module.exports = {
     name: "say",
     description: "Replay with same message",
@@ -13,7 +10,6 @@ module.exports = {
         }
 
         message.delete();
-        console.log(args);
         message.channel.send(`>>> ${args.join(" ")}`);
     }
 }
