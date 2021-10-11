@@ -21,7 +21,6 @@ handlers.forEach((handler) => {
 });
 
 //TESTING
-//TESTING 2
 
 // Logs the client in, establishing a websocket connection to Discord
 client.login(config.token);
