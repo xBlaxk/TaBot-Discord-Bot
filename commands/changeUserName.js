@@ -10,7 +10,7 @@ module.exports = {
         // const oldName = testUser.user.username;
 
 
-        // const newName = `🤖 ${oldName}`
+        // const newName = `🤖 ${oldName}`s
         // console.log(`oldName: ${oldName}`);
         // console.log(`newName: ${newName}`);
         // message.member.setUsername(newName);
