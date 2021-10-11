@@ -4,13 +4,13 @@ module.exports = {
     execute(message, args, cmd, client, Discord) {
         console.log(`changeUserName`);
         const testBotId = "773714252200149043";
-        const testUser = client.users.cache.find((user) => user.id === testBotId)
-        console.log(testUser);
+        const testUser = message.guild.members.cache.get("user ID here");
+        console.log(testUser.id);
         // const oldName = message.member.nickname;
         // const oldName = testUser.user.username;
 
 
-        // const newName = `🤖 ${oldName}`s
+        // const newName = `🤖 ${oldName}`
         // console.log(`oldName: ${oldName}`);
         // console.log(`newName: ${newName}`);
         // message.member.setUsername(newName);
