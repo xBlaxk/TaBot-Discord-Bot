@@ -20,7 +20,5 @@ handlers.forEach((handler) => {
     require(`./handlers/${handler}`)(client, Discord);
 });
 
-//TESTING
-
 // Logs the client in, establishing a websocket connection to Discord
 client.login(config.token);
