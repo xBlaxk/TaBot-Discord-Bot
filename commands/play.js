@@ -97,7 +97,7 @@ const video_player = async (message, player, guild) => {
     song = songsQueue.shift();
     const stream = ytdl(song.url, {filter: 'audioonly'});
     const resource = createAudioResource(stream);
-    connection = queue.get(guild.id).connection;
+    const connection = queue.get(guild.id).connection;
     connection.subscribe(player);
     
     await message.channel.send(`>>> 🎶 Now playing **${song.title}** 🎶`);
