@@ -88,17 +88,17 @@ const songFinder = async (args) => {
 
 
 const video_player = async (message, player, guild) => {
-    // const songsQueue = queue.get(guild.id).songs;
-    // if (!songsQueue.length) {
-    //     client.commands.get('leave').execute(message)
-    //     queue.delete(guild.id);
-    //     return;
-    // }
-    // song = songsQueue.shift();
-    // const stream = ytdl(song.url, {filter: 'audioonly'});
-    // const resource = createAudioResource(stream);
-    // connection = queue.get(guild.id).connection;
-    // connection.subscribe(player);
+    const songsQueue = queue.get(guild.id).songs;
+    if (!songsQueue.length) {
+        client.commands.get('leave').execute(message)
+        queue.delete(guild.id);
+        return;
+    }
+    song = songsQueue.shift();
+    const stream = ytdl(song.url, {filter: 'audioonly'});
+    const resource = createAudioResource(stream);
+    connection = queue.get(guild.id).connection;
+    connection.subscribe(player);
     
     await message.channel.send(`>>> 🎶 Now playing **${song.title}** 🎶`);
 }
