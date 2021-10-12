@@ -100,7 +100,7 @@ const video_player = async (message, player, guild) => {
     // connection = queue.get(guild.id).connection;
     // connection.subscribe(player);
     
-    // await message.channel.send(`>>> 🎶 Now playing **${song.title}** 🎶`);
+    await message.channel.send(`>>> 🎶 Now playing **${song.title}** 🎶`);
 }
 
 const createConnection = async (message, client, guild) => {
