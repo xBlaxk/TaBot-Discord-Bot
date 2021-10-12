@@ -1,3 +1,3 @@
 # TaBot-Discord-Bot
 
-test delete branch
+Personal discord bot project
