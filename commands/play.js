@@ -25,40 +25,61 @@ module.exports = {
                 return textChannel.send(`>>> I DO NOT have the permission to **CONNECT** to this channel`); // Can't conenct
             if (!permissions.has('SPEAK'))
                 return textChannel.send(`>>> I DO NOT have the permission to **SPEAK** in this channel`); // Can't Speak
-            if (!args.length)
+            if (!args.length && cmd == 'play')
                 return textChannel.send(`>>> You need to type a song name or a link`); // Verify arguments
         }
 
         const player = createAudioPlayer();
         const connection = await createConnection(message, client, guild);
-
+        
         // Player controls switch
-        if (cmd === 'play') {
-            const songInfo = await songFinder(args); // returns {title: [String], url: [String]}
-            if (!queue.size) { // Fist call, create the connection and queue of songs
-                const queueConstructor = {
-                    voiceChannel: voiceChannel,
-                    textChannel: textChannel,
-                    connection: null,
-                    songs: []
+        const PLAYER_CONTROLLERS = {
+            'play': async() => {
+                const songInfo = await songFinder(args); // returns {title: [String], url: [String]}
+                if (!queue.size) { // Fist call, create the connection and queue of songs
+                    const queueConstructor = {
+                        voiceChannel: voiceChannel,
+                        textChannel: textChannel,
+                        connection: null,
+                        songs: []
+                    }
+                    queueConstructor.songs.push(songInfo);
+                    queue.set(guild.id, queueConstructor);
+                    try {
+                        queueConstructor.connection = connection;
+                        video_player(message, player, guild);
+                    } catch (err) {
+                        queue.delete(guild.id); // Delete queue info on error
+                        textChannel.send(`>>> There was an error connecting!`);
+                        throw err;
+                    }
+                } else {
+                    queue.get(guild.id).songs.push(songInfo);
+                    return textChannel.send(`>>> 👍 **${songInfo.title}** added to queue! 👍`);
                 }
-                queueConstructor.songs.push(songInfo);
-                queue.set(guild.id, queueConstructor);
-                try {
-                    queueConstructor.connection = connection;
-                    video_player(message, player, guild);
-                } catch (err) {
-                    queue.delete(guild.id); // Delete queue info on error
-                    textChannel.send(`>>> There was an error connecting!`);
-                    throw err;
-                }
-            } else {
-                queue.get(guild.id).songs.push(songInfo);
-                return textChannel.send(`>>> 👍 **${songInfo.title}** added to queue! 👍`);
+            },
+
+            'pause': () => {
+                return `pause`;
+            },
+
+            'stop': () => {
+                return `stop`;
+            },
+
+            'skip': () => {
+                return `skip`;
+            },
+
+            'playlist': () => {
+                return `playlist`;
             }
         }
 
-        client.on("voiceStateUpdate", (oldState, newState) => {
+        PLAYER_CONTROLLERS[cmd]; //Calls the function from PLAYER_CONTROLLERS
+
+        //Delete the guild info from the queue when the bot leaves the voice channel
+        client.on('voiceStateUpdate', (oldState, newState) => {
             if (newState.id === client.application.id) {
                 if (newState.channelId === null) {
                     queue.delete(guild.id);
@@ -97,7 +118,7 @@ const video_player = async (message, player, guild) => {
     song = songsQueue.shift();
     const stream = ytdl(song.url, {filter: 'audioonly'});
     const resource = createAudioResource(stream);
-    connection = queue.get(guild.id).connection;
+    const connection = queue.get(guild.id).connection;
     connection.subscribe(player);
     
     await message.channel.send(`>>> 🎶 Now playing **${song.title}** 🎶`);
