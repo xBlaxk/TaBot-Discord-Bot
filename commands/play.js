@@ -42,32 +42,51 @@ module.exports = {
         // }
 
         // Player controls switch
-        if (cmd === 'play') {
-            const songInfo = await songFinder(args); // returns {title: [String], url: [String]}
-            if (!queue.size) { // Fist time, create the connection and queue of songs
-                const queueConstructor = {
-                    voiceChannel: voiceChannel,
-                    textChannel: textChannel,
-                    connection: null,
-                    songs: []
+        const PLAYER_CONTROLS = {
+            'play': async() => {
+                const songInfo = await songFinder(args); // returns {title: [String], url: [String]}
+                if (!queue.size) { // Fist call, create the connection and queue of songs
+                    const queueConstructor = {
+                        voiceChannel: voiceChannel,
+                        textChannel: textChannel,
+                        connection: null,
+                        songs: []
+                    }
+                    queueConstructor.songs.push(songInfo);
+                    queue.set(guild.id, queueConstructor);
+                    try {
+                        queueConstructor.connection = connection;
+                        video_player(message, player, guild);
+                    } catch (err) {
+                        queue.delete(guild.id); // Delete queue info on error
+                        textChannel.send(`>>> There was an error connecting!`);
+                        throw err;
+                    }
+                } else {
+                    queue.get(guild.id).songs.push(songInfo);
+                    return textChannel.send(`>>> 👍 **${songInfo.title}** added to queue! 👍`);
                 }
-                queueConstructor.songs.push(songInfo);
-                queue.set(guild.id, queueConstructor);
-                try {
-                    connection = client.commands.get("join").execute(message);
-                    queueConstructor.connection = connection;
-                    // video_player(message, player, guild);
-                } catch (err) {
-                    queue.delete(guild.id); // Delete queue info on error
-                    textChannel.send(`>>> There was an error connecting!`);
-                    throw err;
-                }
-            } else {
-                queue.get(guild.id).songs.push(songInfo);
-                return textChannel.send(`>>> 👍 **${songInfo.title}** added to queue! 👍`);
+            },
+
+            'pause': () => {
+                return `pause`;
+            },
+
+            'stop': () => {
+                return `stop`;
+            },
+
+            'skip': () => {
+                return `skip`;
+            },
+
+            'playlist': () => {
+                return `playlist`;
             }
         }
 
+        PLAYER_CONTROLS[cmd]();
+        
         //Delete the guild info from the queue when the bot leaves the voice channel
         client.on('voiceStateUpdate', (oldState, newState) => {
             if (newState.id === client.application.id) {
