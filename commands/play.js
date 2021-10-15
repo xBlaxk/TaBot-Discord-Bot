@@ -45,7 +45,7 @@ module.exports = {
         const PLAYER_CONTROLLERS = {
             'play': async() => {
                 const songInfo = await songFinder(args); // returns {title: [String], url: [String]}
-                if (!queue.size) { // Fist call, create the connection and queue of songs
+                if (!queue.size) { // Fist time, create the connection and queue of songs
                     const queueConstructor = {
                         voiceChannel: voiceChannel,
                         textChannel: textChannel,
