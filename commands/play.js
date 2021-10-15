@@ -55,8 +55,9 @@ module.exports = {
                     queueConstructor.songs.push(songInfo);
                     queue.set(guild.id, queueConstructor);
                     try {
+                        const connection =  await client.commands.get("join").execute(message);
                         queueConstructor.connection = connection;
-                        video_player(message, player, guild);
+                        // video_player(message, player, guild);
                     } catch (err) {
                         queue.delete(guild.id); // Delete queue info on error
                         textChannel.send(`>>> There was an error connecting!`);
@@ -86,7 +87,7 @@ module.exports = {
         }
 
         PLAYER_CONTROLS[cmd]();
-        
+
         //Delete the guild info from the queue when the bot leaves the voice channel
         client.on('voiceStateUpdate', (oldState, newState) => {
             if (newState.id === client.application.id) {
