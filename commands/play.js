@@ -1,7 +1,6 @@
 const ytdl = require('ytdl-core');
 const ytSearch = require('yt-search');
 const {createAudioPlayer ,createAudioResource, getVoiceConnection,} = require('@discordjs/voice');
-const {Player} = require('discord-music-player');
 const queue = new Map();
 
 
@@ -10,7 +9,7 @@ module.exports = {
     description: 'joins a server and play a song',
     async execute(message, args, cmd, client, Discord) {
         console.log(`${this.name}`); // console log command's name
-        
+
         // Main info
         const member = message.member; // member info
         const textChannel = message.channel; // Text channel where the command was called
@@ -29,9 +28,19 @@ module.exports = {
                 return textChannel.send(`>>> You need to type a song name or a link`); // Verify arguments
         }
 
-        const player = createAudioPlayer();
-        const connection = await createConnection(message, client, guild);
+        // const {Player} = require('discord-music-player');
+        // const player = new Player(client, {leaveOnEmpty: false});
+        // client.player = player;
         
+        // if(cmd === 'play') {
+        //     let queue = client.player.createQueue(message.guild.id);
+        //     await queue.join(message.member.voice.channel);
+        //     let song = await queue.play(args.join(' ')).catch(_ => {
+        //         if(!guildQueue)
+        //             queue.stop();
+        //     });
+        // }
+
         // Player controls switch
         const PLAYER_CONTROLLERS = {
             'play': async() => {
@@ -46,6 +55,7 @@ module.exports = {
                     queueConstructor.songs.push(songInfo);
                     queue.set(guild.id, queueConstructor);
                     try {
+                        connection = client.commands.get("join").execute(message);
                         queueConstructor.connection = connection;
                         video_player(message, player, guild);
                     } catch (err) {
