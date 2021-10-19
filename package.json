@@ -9,7 +9,7 @@
   "author": "Blaxk",
   "license": "ISC",
   "dependencies": {
-    "@discordjs/opus": "^0.6.0",
+    "@discordjs/opus": "github:discordjs/opus",
     "@discordjs/rest": "^0.1.0-canary.0",
     "@discordjs/voice": "^0.6.0",
     "discord-api-types": "^0.23.1",
@@ -17,6 +17,7 @@
     "discord-player": "^5.1.0",
     "discord.js": "^13.2.0",
     "discord.js-commando": "^0.12.3",
+    "ffmpeg-static": "^4.4.0",
     "yt-search": "^2.10.1",
     "ytdl-core": "^4.9.1"
   }
