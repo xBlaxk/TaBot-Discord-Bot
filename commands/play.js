@@ -13,9 +13,8 @@ module.exports = {
         if (!message.member.voice.channel) return message.channel.send('>>> You must be in a voice channel'); // Verify if user is on a voice channel
         const guild = message.guild;
         const guildInfo = queue.get(guild.id);
-        if (guildInfo) {
-            const player = guildInfo.player;
-        }
+        const player = guildInfo.player;
+            
 
         // Verify permissions
         const permissions = message.member.voice.channel.permissionsFor(message.client.user);
@@ -27,110 +26,132 @@ module.exports = {
             if (!args.length && (cmd == 'play' || cmd == 'p'))
                 return message.channel.send(`>>> You need to type a song name or a link`); // Verify arguments
         }
-        
-        if (cmd === 'play' || cmd === 'p') {
-            const songInfo = await songFinder(args); // returns {title: [String], url: [String]}
-            if (!queue.get(guild.id)) { // True if bot is not connected to a voice channel in the current guild
-                const queueConstructor = {
-                    voiceChannel: message.member.voice.channel,
-                    textChannel: message.channel,
-                    player: player = createAudioPlayer({
-                        behaviors: {
-                            noSubscriber: NoSubscriberBehavior.Pause,
-                        },
-                    }),
-                    connection: null,
-                    loop: false,
-                    pause: false,
-                    songs: []
-                }
-                queueConstructor.songs.push(songInfo);
-                queue.set(guild.id, queueConstructor);
-                try {
-                    const connection = client.commands.get("join").execute(message);
-                    queueConstructor.connection = connection;
-                    connection.subscribe(player);
-                    audio_player(message, guild);
-                } catch (err) {
-                    queue.delete(guild.id); // Delete queue info on error
-                    message.reply(`>>> There was an error connecting!`);
-                    throw err;
-                }
-            } else {
-                queue.get(guild.id).songs.push(songInfo);
-                if (player.state.status === 'idle')
-                    audio_player(message, guild);
-                else 
-                    return message.channel.send(`>>> 👍 **${songInfo.title}** added to queue! 👍`);
-            }
-        } else if (cmd === 'pause') { //true if playing
-            if (guildInfo) {
-                if (player.state.status === 'playing' && !guildInfo.pause) {
-                    player.pause();
-                    guildInfo.pause = true;
-                    return message.channel.send(`>>> ✋ Song paused ✋`);
-                }
-            }
-        } else if (cmd === 'resume') {
-            if (guildInfo) {
-                if (player.state.status === 'paused' && guildInfo.pause) {
-                    player.unpause();
-                    guildInfo.pause = false;
-                    return message.channel.send(`>>> ▶️ Song resumed ▶️`);
-                }
-            }
-        } else if (cmd === 'stop') {
-            if (guildInfo) {
-                player.stop();
-                return message.channel.send(`>>> ⛔ Song stoped ⛔`);
-            }
-        } else if (cmd === 'skip') {
-            if (guildInfo && guildInfo.songs) {
-                message.channel.send(`>>> ⏭️ Skipping song ⏭️`);
-                return audio_player(message, guild);
-            }
-        } else if (cmd === 'playlist') {
-            if (guildInfo) {
-                songsQueue = guildInfo.songs;
-                if (args.length != 0) {
-                    const index = parseInt(args[0]);
-                    if (Number.isInteger(index) && index <= songsQueue.length) {
-                        for (let i = 0; i < index-1; i++) {
-                            songsQueue.shift();
-                        }
-                        return audio_player(message, guild);
+
+        if (cmd === 'p')
+            cmd = 'play';
+
+        const PLAYER_CONTROLS = {
+            'play': async () => {
+                const songInfo = await songFinder(args); // returns {title: [String], url: [String]}
+                if (!queue.get(guild.id)) { // True if bot is not connected to a voice channel in the current guild
+                    const queueConstructor = {
+                        voiceChannel: message.member.voice.channel,
+                        textChannel: message.channel,
+                        player: player = createAudioPlayer({
+                            behaviors: {
+                                noSubscriber: NoSubscriberBehavior.Pause,
+                            },
+                        }),
+                        connection: null,
+                        loop: false,
+                        pause: false,
+                        songs: []
+                    }
+                    queueConstructor.songs.push(songInfo);
+                    queue.set(guild.id, queueConstructor);
+                    try {
+                        const connection = client.commands.get("join").execute(message);
+                        queueConstructor.connection = connection;
+                        connection.subscribe(player);
+                        audio_player(message, guild);
+                    } catch (err) {
+                        queue.delete(guild.id); // Delete queue info on error
+                        message.reply(`>>> There was an error connecting!`);
+                        throw err;
+                    }
+                } else {
+                    queue.get(guild.id).songs.push(songInfo);
+                    if (player.state.status === 'idle') {
+                        audio_player(message, guild);
                     } else {
-                        message.reply(`>>> 🛑 Ingresa una posición en la playlist válida 🛑`);
+                        message.channel.send(`>>> 👍 **${songInfo.title}** added to queue! 👍`);
                     }
                 }
-                if (songsQueue.length != 0) {
-                    let text = "";
-                    songsQueue.forEach((song, index) => {
-                        text += `#${index+1} - ${song.title}\n`;
-                    });
-                    return message.channel.send(`>>> *_*_*_*_*_*_*_*_*_*_*_*_*__**Songs Queue**__*_*_*_*_*_*_*_*_*_*_*_*_* \n\n${text}`);
+            },
+
+            'pause': () => {
+                if (guildInfo) {
+                    if (player.state.status === 'playing' && !guildInfo.pause) {
+                        player.pause();
+                        guildInfo.pause = true;
+                        message.channel.send(`>>> ✋ Song paused ✋`);
+                    }
+                }
+            },
+
+            'resume': () => {
+                if (guildInfo) {
+                    if (player.state.status === 'paused' && guildInfo.pause) {
+                        player.unpause();
+                        guildInfo.pause = false;
+                        message.channel.send(`>>> ▶️ Song resumed ▶️`);
+                    }
+                }
+            },
+
+            'stop': () => {
+                if (guildInfo) {
+                    player.stop();
+                    message.channel.send(`>>> ⛔ Song stoped ⛔`);
+                }
+            },
+
+            'skip': () => {
+                if (guildInfo && guildInfo.songs) {
+                    message.channel.send(`>>> ⏭️ Skipping song ⏭️`);
+                    audio_player(message, guild);
+                }
+            },
+
+            'playlist': () => {
+                if (guildInfo) {
+                    songsQueue = guildInfo.songs;
+                    if (args.length != 0) {
+                        const index = parseInt(args[0]);
+                        if (Number.isInteger(index) && index <= songsQueue.length) {
+                            for (let i = 0; i < index - 1; i++) {
+                                songsQueue.shift();
+                            }
+                            audio_player(message, guild);
+                        } else {
+                            message.reply(`>>> 🛑 Ingresa una posición en la playlist válida 🛑`);
+                        }
+                    }
+                    if (songsQueue.length != 0) {
+                        let text = "";
+                        songsQueue.forEach((song, index) => {
+                            text += `#${index + 1} - ${song.title}\n`;
+                        });
+                        message.channel.send(`>>> *_*_*_*_*_*_*_*_*_*_*_*_*__**Songs Queue**__*_*_*_*_*_*_*_*_*_*_*_*_* \n\n${text}`);
+                    }
                 }
             }
         }
-
-        //Delete the guild info from the queue when the bot leaves the voice channel
-        client.on('voiceStateUpdate', (oldState, newState) => {
-            if (newState.id === client.application.id) {
-                if (newState.channelId === null) {
-                    queue.delete(message.channel.id);
-                }
-            }
-        });
-
-        player.on('error', error => {
-            console.error(error);
-        });
-        
-        player.on(AudioPlayerStatus.Idle, () => {
-            audio_player(message, guild);
-        });
+        PLAYER_CONTROLS[cmd]();
     }
 }
+
+
+//Delete the guild info from the queue when the bot leaves the voice channel
+player.on('error', error => {
+    console.error(error);
+    return;
+});
+
+player.on(AudioPlayerStatus.Idle, () => {
+    console.log("song finished");
+    audio_player(message, guild);
+    return;
+});
+
+client.on('voiceStateUpdate', (oldState, newState) => {
+    if (newState.id === client.application.id) {
+        if (newState.channelId === null) {
+            queue.delete(message.channel.id);
+        }
+    }
+    return;
+});
 
 // Search a song 
 const songFinder = async (args) => {
