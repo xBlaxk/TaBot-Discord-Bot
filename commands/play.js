@@ -95,8 +95,13 @@ module.exports = {
                 songsQueue = guildInfo.songs;
                 if (args.length != 0) {
                     const index = parseInt(args[0]);
-                    songsQueue.unshift(songsQueue.splice(index));
-                    return audio_player(message, guild);
+                    if (Number.isInteger(index) && index <= songsQueue.length) {
+                        const splicedElement = songsQueue.splice(index);
+                        songsQueue.unshift(splicedElement[0]);
+                        return audio_player(message, guild);
+                    } else {
+                        message.channel.send(`>>> 🛑 Ingresa una posición en la playlist válida 🛑`);
+                    }
                 }
                 if (songsQueue.length != 0) {
                     let text = "";
