@@ -1,4 +1,4 @@
->>> TaBot v0.1 by **Blaxk**
+>>> TaBot **v0.2** by **Blaxk**
 Bot icon by **ArtJay**
 
 **Description**
@@ -16,7 +16,7 @@ Trip's Synthwave Resort WIP personal bot
 **>join**  ->  TaBot will join a voice channel
 **>leave**  ->  TaBot will leave the voice channel
 
-**//Music Player [WIP] [NOT WORKING]**
+**//Music Player [WIP]**
 **>play** *[url]*  ->  Play music from the given URL or Song name
 **>pause**  ->  Pause the music
 **>stop**  ->  Stop the music
