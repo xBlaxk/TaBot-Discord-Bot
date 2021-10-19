@@ -1,7 +1,9 @@
 {
   "name": "discord-bot",
   "version": "1.0.0",
-  "description": "",
+  "description": "A multi-pourpose discord bot",
+  "engines": {
+    "node": "v16.x"},
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
