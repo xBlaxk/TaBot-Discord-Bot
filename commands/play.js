@@ -16,7 +16,6 @@ module.exports = {
         if (guildInfo) {
             const player = guildInfo.player;
         }
-
         // Verify permissions
         const permissions = message.member.voice.channel.permissionsFor(message.client.user);
         if (permissions) { // Get permisssions from user
@@ -29,7 +28,7 @@ module.exports = {
         }
         
         if (cmd === 'play' || cmd === 'p') {
-            const songInfo = await songFinder(args); // returns {title: [String], url: [String]}
+            const songInfo = await songFinder(args); // //returns {title: [String], url: [String]}
             if (!queue.get(guild.id)) { // True if bot is not connected to a voice channel in the current guild
                 const queueConstructor = {
                     voiceChannel: message.member.voice.channel,
@@ -58,17 +57,18 @@ module.exports = {
                 }
             } else {
                 queue.get(guild.id).songs.push(songInfo);
-                if (player.state.status === 'idle')
+                if (player.state.status === 'idle' || player.state.status === 'autopaused') {
                     audio_player(message, guild);
+                }
                 else 
-                    return message.channel.send(`>>> 👍 **${songInfo.title}** added to queue! 👍`);
+                    message.channel.send(`>>> 👍 **${songInfo.title}** added to queue! 👍`);
             }
         } else if (cmd === 'pause') { //true if playing
             if (guildInfo) {
                 if (player.state.status === 'playing' && !guildInfo.pause) {
                     player.pause();
                     guildInfo.pause = true;
-                    return message.channel.send(`>>> ✋ Song paused ✋`);
+                    message.channel.send(`>>> ✋ Song paused ✋`);
                 }
             }
         } else if (cmd === 'resume') {
@@ -76,18 +76,18 @@ module.exports = {
                 if (player.state.status === 'paused' && guildInfo.pause) {
                     player.unpause();
                     guildInfo.pause = false;
-                    return message.channel.send(`>>> ▶️ Song resumed ▶️`);
+                    message.channel.send(`>>> ▶️ Song resumed ▶️`);
                 }
             }
         } else if (cmd === 'stop') {
             if (guildInfo) {
                 player.stop();
-                return message.channel.send(`>>> ⛔ Song stoped ⛔`);
+                message.channel.send(`>>> ⛔ Song stoped ⛔`);
             }
         } else if (cmd === 'skip') {
             if (guildInfo && guildInfo.songs) {
                 message.channel.send(`>>> ⏭️ Skipping song ⏭️`);
-                return audio_player(message, guild);
+                audio_player(message, guild);
             }
         } else if (cmd === 'playlist') {
             if (guildInfo) {
@@ -98,7 +98,7 @@ module.exports = {
                         for (let i = 0; i < index-1; i++) {
                             songsQueue.shift();
                         }
-                        return audio_player(message, guild);
+                        audio_player(message, guild);
                     } else {
                         message.reply(`>>> 🛑 Ingresa una posición en la playlist válida 🛑`);
                     }
@@ -108,31 +108,34 @@ module.exports = {
                     songsQueue.forEach((song, index) => {
                         text += `#${index+1} - ${song.title}\n`;
                     });
-                    return message.channel.send(`>>> *_*_*_*_*_*_*_*_*_*_*_*_*__**Songs Queue**__*_*_*_*_*_*_*_*_*_*_*_*_* \n\n${text}`);
+                    message.channel.send(`>>> *_*_*_*_*_*_*_*_*_*_*_*_*__**Songs Queue**__*_*_*_*_*_*_*_*_*_*_*_*_* \n\n${text}`);
                 }
             }
         }
 
         //Delete the guild info from the queue when the bot leaves the voice channel
         client.on('voiceStateUpdate', (oldState, newState) => {
+            console.log("update");
             if (newState.id === client.application.id) {
                 if (newState.channelId === null) {
                     queue.delete(message.channel.id);
                 }
             }
         });
+        
+        player.on(AudioPlayerStatus.Idle, () => {
+            console.log("on/Idle");
+            console.log("audio_player");
+            audio_player(message, guild);
+        });
 
         player.on('error', error => {
             console.error(error);
         });
-        
-        player.on(AudioPlayerStatus.Idle, () => {
-            audio_player(message, guild);
-        });
     }
 }
 
-// Search a song 
+// Search a song /
 const songFinder = async (args) => {
     if (ytdl.validateURL(args[0])) {
         const song_info = await ytdl.getInfo(args[0]);
@@ -152,6 +155,7 @@ const songFinder = async (args) => {
 }
 
 const audio_player = async (message, guild) => {
+    console.log("audio_player");
     const songsQueue = queue.get(guild.id).songs;
     if (songsQueue.length != 0) {
         const player = queue.get(guild.id).player;
