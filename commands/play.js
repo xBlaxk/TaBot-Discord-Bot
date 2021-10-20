@@ -128,30 +128,31 @@ module.exports = {
             }
         }
         PLAYER_CONTROLS[cmd]();
+
+        player.on('error', error => {
+            console.error(error);
+            return;
+        });
+        
+        player.on(AudioPlayerStatus.Idle, () => {
+            console.log("song finished");
+            audio_player(message, guild);
+            return;
+        });
+        
+        client.on('voiceStateUpdate', (oldState, newState) => {
+            if (newState.id === client.application.id) {
+                if (newState.channelId === null) {
+                    queue.delete(message.channel.id);
+                }
+            }
+            return;
+        });
     }
 }
 
 
 //Delete the guild info from the queue when the bot leaves the voice channel
-player.on('error', error => {
-    console.error(error);
-    return;
-});
-
-player.on(AudioPlayerStatus.Idle, () => {
-    console.log("song finished");
-    audio_player(message, guild);
-    return;
-});
-
-client.on('voiceStateUpdate', (oldState, newState) => {
-    if (newState.id === client.application.id) {
-        if (newState.channelId === null) {
-            queue.delete(message.channel.id);
-        }
-    }
-    return;
-});
 
 // Search a song 
 const songFinder = async (args) => {
