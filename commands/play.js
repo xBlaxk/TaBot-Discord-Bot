@@ -133,7 +133,8 @@ module.exports = {
         await PLAYER_CONTROL[cmd]();
 
         
-        if (!setEvents) {
+        
+        // if (!setEvents) {
             //Delete the guild info from the queue when the bot leaves the voice channel
             client.on('voiceStateUpdate', (oldState, newState) => {
                 if (newState.id === client.application.id) {
@@ -155,7 +156,7 @@ module.exports = {
                 // return;
             });
             setEvents = true;
-        }
+        // }
     }
 }
     
