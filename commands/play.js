@@ -1,11 +1,11 @@
 const ytdl = require('ytdl-core');
 const ytSearch = require('yt-search');
-const {createAudioPlayer, createAudioResource, NoSubscriberBehavior, AudioPlayerStatus} = require('@discordjs/voice');
+const {createAudioPlayer, createAudioResource, NoSubscriberBehavior} = require('@discordjs/voice');
 const queue = new Map();
 
 module.exports = {
     name: 'play',
-    aliases: ['p', 'pause', 'resume', 'stop', 'skip', 'playlist', 'remove'],
+    aliases: ['p', 'pause', 'resume', 'stop', 'skip', 'playlist'],
     description: 'joins a server and play a song',
     async execute(message, args, cmd, client, Discord) {
         console.log(`---player---`); // console log command's name
@@ -27,7 +27,9 @@ module.exports = {
             if (!args.length && (cmd == 'play' || cmd == 'p'))
                 return message.channel.send(`>>> You need to type a song name or a link`); // Verify arguments
         }
+
         
+
         if (cmd === 'play' || cmd === 'p') {
             const songInfo = await songFinder(args); // returns {title: [String], url: [String]}
             if (!queue.get(guild.id)) { // True if bot is not connected to a voice channel in the current guild
@@ -53,15 +55,14 @@ module.exports = {
                     audio_player(message, guild);
                 } catch (err) {
                     queue.delete(guild.id); // Delete queue info on error
-                    message.reply(`>>> There was an error connecting!`);
+                    message.channel.send(`>>> There was an error connecting!`);
                     throw err;
                 }
             } else {
                 queue.get(guild.id).songs.push(songInfo);
                 if (player.state.status === 'idle')
                     audio_player(message, guild);
-                else 
-                    return message.channel.send(`>>> 👍 **${songInfo.title}** added to queue! 👍`);
+                return message.channel.send(`>>> 👍 **${songInfo.title}** added to queue! 👍`);
             }
         } else if (cmd === 'pause') { //true if playing
             if (guildInfo) {
@@ -95,12 +96,11 @@ module.exports = {
                 if (args.length != 0) {
                     const index = parseInt(args[0]);
                     if (Number.isInteger(index) && index <= songsQueue.length) {
-                        for (let i = 0; i < index-1; i++) {
-                            songsQueue.shift();
-                        }
+                        const splicedElement = songsQueue.splice(index);
+                        songsQueue.unshift(splicedElement[0]);
                         return audio_player(message, guild);
                     } else {
-                        message.reply(`>>> 🛑 Ingresa una posición en la playlist válida 🛑`);
+                        message.channel.send(`>>> 🛑 Ingresa una posición en la playlist válida 🛑`);
                     }
                 }
                 if (songsQueue.length != 0) {
@@ -120,14 +120,6 @@ module.exports = {
                     queue.delete(message.channel.id);
                 }
             }
-        });
-
-        player.on('error', error => {
-            console.error(error);
-        });
-        
-        player.on(AudioPlayerStatus.Idle, () => {
-            audio_player(message, guild);
         });
     }
 }
@@ -151,15 +143,14 @@ const songFinder = async (args) => {
     }
 }
 
-const audio_player = async (message, guild) => {
-    const songsQueue = queue.get(guild.id).songs;
-    if (songsQueue.length != 0) {
-        const player = queue.get(guild.id).player;
-        const song = songsQueue.shift();
-        const stream = ytdl(song.url, {filter: 'audioonly'});
-        const resource = createAudioResource(stream);
-        player.play(resource);
 
-        message.channel.send(`>>> 🎶 Now playing **${song.title}** 🎶`);
-    }
+const audio_player = async (message, guild) => {
+    const player = queue.get(guild.id).player;
+    const songsQueue = queue.get(guild.id).songs;
+    const song = songsQueue.shift();
+    const stream = ytdl(song.url, {filter: 'audioonly'});
+    const resource = createAudioResource(stream);
+    player.play(resource);
+
+    await message.channel.send(`>>> 🎶 Now playing **${song.title}** 🎶`);
 }
