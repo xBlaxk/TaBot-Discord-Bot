@@ -14,7 +14,6 @@ module.exports = {
         if (!message.member.voice.channel) return message.channel.send('>>> You must be in a voice channel'); // Verify if user is on a voice channel
         const guild = message.guild;
         const guildInfo = queue.get(guild.id);
-
         // Verify permissions
         const permissions = message.member.voice.channel.permissionsFor(message.client.user);
         if (permissions) { // Get permisssions from user
@@ -179,6 +178,7 @@ module.exports = {
 }
 
 const audio_player = async (message, guild) => {
+    console.log("audio_player");
     const songsQueue = queue.get(guild.id).songs;
     if (songsQueue.length != 0) {
         const player = queue.get(guild.id).player;
