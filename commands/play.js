@@ -58,10 +58,11 @@ module.exports = {
                 }
             } else {
                 queue.get(guild.id).songs.push(songInfo);
-                if (player.state.status === 'idle')
+                if (player.state.status === 'idle' || player.state.status === 'autopaused')
                     audio_player(message, guild);
                 else 
-                    return message.channel.send(`>>> 👍 **${songInfo.title}** added to queue! 👍`);
+                    message.channel.send(`>>> 👍 **${songInfo.title}** added to queue! 👍`);
+                return;
             }
         } else if (cmd === 'pause') { //true if playing
             if (guildInfo) {
@@ -85,10 +86,13 @@ module.exports = {
                 return message.channel.send(`>>> ⛔ Song stoped ⛔`);
             }
         } else if (cmd === 'skip') {
-            if (guildInfo && guildInfo.songs) {
+            if (guildInfo && guildInfo.songs.length != 0) {
                 message.channel.send(`>>> ⏭️ Skipping song ⏭️`);
-                return audio_player(message, guild);
+                audio_player(message, guild);
+            } else {
+                message.reply(`>>> 😥 There's no more songs 😥`);
             }
+            return;
         } else if (cmd === 'playlist') {
             if (guildInfo) {
                 songsQueue = guildInfo.songs;
@@ -98,9 +102,9 @@ module.exports = {
                         for (let i = 0; i < index-1; i++) {
                             songsQueue.shift();
                         }
-                        return audio_player(message, guild);
+                        audio_player(message, guild);
                     } else {
-                        message.reply(`>>> 🛑 Ingresa una posición en la playlist válida 🛑`);
+                        message.reply(`>>> 🛑 Give a valid playlist position 🛑`);
                     }
                 }
                 if (songsQueue.length != 0) {
@@ -108,26 +112,32 @@ module.exports = {
                     songsQueue.forEach((song, index) => {
                         text += `#${index+1} - ${song.title}\n`;
                     });
-                    return message.channel.send(`>>> *_*_*_*_*_*_*_*_*_*_*_*_*__**Songs Queue**__*_*_*_*_*_*_*_*_*_*_*_*_* \n\n${text}`);
+                    message.channel.send(`>>> *_*_*_*_*_*_*_*_*_*_*_*_*__**Songs Queue**__*_*_*_*_*_*_*_*_*_*_*_*_* \n\n${text}`);
+                } else {
+                    message.reply(`>>> 🙅 The song queue is empty 🙅`);
                 }
             }
+            return;
         }
 
         //Delete the guild info from the queue when the bot leaves the voice channel
         client.on('voiceStateUpdate', (oldState, newState) => {
             if (newState.id === client.application.id) {
                 if (newState.channelId === null) {
-                    queue.delete(message.channel.id);
+                    queue.delete(guild.id);
                 }
             }
+            return;
         });
 
         player.on('error', error => {
             console.error(error);
+            return;
         });
         
         player.on(AudioPlayerStatus.Idle, () => {
             audio_player(message, guild);
+            return;
         });
     }
 }
