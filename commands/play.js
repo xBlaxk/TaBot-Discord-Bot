@@ -69,6 +69,7 @@ module.exports = {
                         message.channel.send(`>>> 👍 **${songInfo.title}** added to queue! 👍`);
                     }
                 }
+                return;
             },
 
             'pause': () => {
@@ -79,6 +80,7 @@ module.exports = {
                         message.channel.send(`>>> ✋ Song paused ✋`);
                     }
                 }
+                return;
             },
 
             'resume': () => {
@@ -89,6 +91,7 @@ module.exports = {
                         message.channel.send(`>>> ▶️ Song resumed ▶️`);
                     }
                 }
+                return;
             },
 
             'stop': () => {
@@ -96,6 +99,7 @@ module.exports = {
                     player.stop();
                     message.channel.send(`>>> ⛔ Song stoped ⛔`);
                 }
+                return;
             },
 
             'skip': () => {
@@ -103,6 +107,7 @@ module.exports = {
                     message.channel.send(`>>> ⏭️ Skipping song ⏭️`);
                     audio_player(message, guild);
                 }
+                return;
             },
 
             'playlist': () => {
@@ -127,10 +132,19 @@ module.exports = {
                         message.channel.send(`>>> *_*_*_*_*_*_*_*_*_*_*_*_*__**Songs Queue**__*_*_*_*_*_*_*_*_*_*_*_*_* \n\n${text}`);
                     }
                 }
+                return;
             }
         }
         PLAYER_CONTROLS[cmd]();
-
+        
+        client.on('voiceStateUpdate', (oldState, newState) => {
+            if (newState.id === client.application.id) {
+                if (newState.channelId === null) {
+                    queue.delete(message.channel.id);
+                }
+            }
+            return;
+        });
         player.on('error', error => {
             console.error(error);
             return;
@@ -142,14 +156,6 @@ module.exports = {
             return;
         });
         
-        client.on('voiceStateUpdate', (oldState, newState) => {
-            if (newState.id === client.application.id) {
-                if (newState.channelId === null) {
-                    queue.delete(message.channel.id);
-                }
-            }
-            return;
-        });
     }
 }
 
