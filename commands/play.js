@@ -13,7 +13,9 @@ module.exports = {
         if (!message.member.voice.channel) return message.channel.send('>>> You must be in a voice channel'); // Verify if user is on a voice channel
         const guild = message.guild;
         const guildInfo = queue.get(guild.id);
-        const player = guildInfo.player;
+        if (guildInfo) {
+            const player = guildInfo.player;
+        }
             
 
         // Verify permissions
