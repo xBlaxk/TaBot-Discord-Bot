@@ -2,7 +2,7 @@ const ytdl = require('ytdl-core');
 const ytSearch = require('yt-search');
 const {createAudioPlayer, createAudioResource, NoSubscriberBehavior, AudioPlayerStatus} = require('@discordjs/voice');
 const queue = new Map();
-let setEvents = false;
+let setEvents = true;
 
 module.exports = {
     name: 'play',
@@ -133,7 +133,7 @@ module.exports = {
         await PLAYER_CONTROL[cmd]();
 
         
-        if (!setEvents) {
+        if (setEvents) {
             //Delete the guild info from the queue when the bot leaves the voice channel
             client.on('voiceStateUpdate', (oldState, newState) => {
                 if (newState.id === client.application.id) {
@@ -143,7 +143,6 @@ module.exports = {
                 }
                 // return;
             });
-            
             //Enter idle status when son finish and start next song
             queue.get(guild.id).player.on(AudioPlayerStatus.Idle, () => { 
                 audio_player(message, guild);
@@ -154,7 +153,7 @@ module.exports = {
                 console.error(error);
                 // return;
             });
-            setEvents = true;
+            setEvents = false;
         }
     }
 }
