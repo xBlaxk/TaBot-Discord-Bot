@@ -178,7 +178,7 @@ module.exports = {
         if (video) {
             return song = {title: video.title, url: video.url}
         } else {
-            message.channel.send({embeds: [embedMessage.setDescription(`Error finding the video.`)]});
+            message.channel.send({embeds: [embedMessage.setDescription(`Error finding the video`)]});
         }
     }
 }
