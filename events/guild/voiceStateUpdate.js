@@ -41,7 +41,7 @@ module.exports = (client, Discord, oldState, newState) => {
          }
       } else { // Execute when leaving a voice channel
          // Send message about who joined a voice channel
-         oldState.guild.channels.cache.get(guilds.get(oldState.guild.id).inOutChat).send({embeds: [embedMessage.setDescription(`<@${oldState.id}> joined ${oldState.guild.channels.cache.get(oldState.channelId)}`).setThumbnail('https://i.imgur.com/bIGAJ17.png')]});
+         oldState.guild.channels.cache.get(guilds.get(oldState.guild.id).inOutChat).send({embeds: [embedMessage.setDescription(`<@${oldState.id}> leaved ${oldState.guild.channels.cache.get(oldState.channelId)}`).setThumbnail('https://i.imgur.com/bIGAJ17.png')]});
       }
    }
 }
