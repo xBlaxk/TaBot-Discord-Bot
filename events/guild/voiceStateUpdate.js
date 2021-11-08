@@ -8,7 +8,6 @@ const embedMessage = new MessageEmbed()
 .setThumbnail('https://imgur.com/6DafL6d');
 
 module.exports = (client, Discord, oldState, newState) => {
-
    if (!guilds.get(newState.guild.id)) {
       const guildConstructor = {
          inOutChat: "907029653238186045"
@@ -33,9 +32,9 @@ module.exports = (client, Discord, oldState, newState) => {
    if (!newState.member.user.bot) { // True if not a bot
       if (newState.channelId) { // Execute when joining a voice channel
          // Send message about who joined a voice channel
-         if (newState.channelId != null && oldState.channelId != null) {
-            // newState.guild.channels.cache.get(guilds.get(newState.guild.id).inOutChat).send(`>>> <@${newState.id}> switched from ${newState.guild.channels.cache.get(oldState.channelId)} to ${newState.guild.channels.cache.get(oldState.channelId)}`);
-            newState.guild.channels.cache.get(guilds.get(newState.guild.id).inOutChat).send({embeds: [embedMessage.setDescription(`<@${newState.id}> switched from ${newState.guild.channels.cache.get(oldState.channelId)} to ${newState.guild.channels.cache.get(oldState.channelId)}`).setThumbnail('https://i.imgur.com/d5bP67n.png')]});
+         if (oldState.channelId) {
+            if (newState.channelId != oldState.channelId)
+               newState.guild.channels.cache.get(guilds.get(newState.guild.id).inOutChat).send({embeds: [embedMessage.setDescription(`<@${newState.id}> switched from ${newState.guild.channels.cache.get(oldState.channelId)} to ${newState.guild.channels.cache.get(oldState.channelId)}`).setThumbnail('https://i.imgur.com/d5bP67n.png')]});
          } else {
             newState.guild.channels.cache.get(guilds.get(newState.guild.id).inOutChat).send({embeds: [embedMessage.setDescription(`<@${newState.id}> joined ${newState.guild.channels.cache.get(newState.channelId)}`).setThumbnail('https://i.imgur.com/bFTxsre.png')]});
          }
