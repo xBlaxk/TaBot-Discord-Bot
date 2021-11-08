@@ -1,4 +1,4 @@
-TaBot **v0.4.1** by **Blaxk**
+TaBot **v0.4.2** by **Blaxk**
 Bot icon by **ArtJay**
 
 **Description**
