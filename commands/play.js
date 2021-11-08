@@ -1,9 +1,15 @@
 const ytdl = require('ytdl-core');
 const ytSearch = require('yt-search');
 const {createAudioPlayer, createAudioResource, NoSubscriberBehavior, AudioPlayerStatus} = require('@discordjs/voice');
+const {MessageEmbed} = require('discord.js');
+const embedMessage = new MessageEmbed()
+.setColor('#0099ff')
+.setTitle('Audio Player')
+.setDescription('Some description here')
+.setThumbnail('https://i.imgur.com/xFuz8BX.png');
+
 const queue = new Map();
 let setEvents = true;
-
 module.exports = {
     name: 'play',
     aliases: ['p', 'pause', 'resume', 'stop', 'skip', 'playlist', 'remove'],
@@ -18,11 +24,11 @@ module.exports = {
         const permissions = message.member.voice.channel.permissionsFor(message.client.user);
         if (permissions) { // Get permisssions from user
             if (!permissions.has('CONNECT'))
-                return message.channel.send(`>>> I DO NOT have the permission to **CONNECT** to this channel`); // Can't conenct
+                return message.reply({embeds: [embedMessage.setDescription(`I DO NOT have the permission to **CONNECT** to this channel`)]}); // Can't conenct
             if (!permissions.has('SPEAK'))
-                return message.channel.send(`>>> I DO NOT have the permission to **SPEAK** in this channel`); // Can't Speak
+                return message.reply({embeds: [embedMessage.setDescription(`I DO NOT have the permission to **SPEAK** in this channel`)]}); // Can't Speak
             if (!args.length && (cmd == 'play' || cmd == 'p'))
-                return message.channel.send(`>>> You need to type a song name or a link`); // Verify arguments
+                return message.reply({embeds: [embedMessage.setDescription(`You need to type a song name or a link`)]}); // Verify arguments
         }
         if (cmd === 'p')
             cmd = 'play';
@@ -53,7 +59,7 @@ module.exports = {
                         audio_player(message, guild);
                     } catch (err) {
                         queue.delete(guild.id); // Delete queue info on error
-                        message.reply(`>>> There was an error connecting!`);
+                        message.reply({embeds: [embedMessage.setDescription(`There was an error connecting!`)]});
                         throw err;
                     }
                 } else {
@@ -61,7 +67,7 @@ module.exports = {
                     if (player.state.status === 'idle' || player.state.status === 'autopaused')
                         audio_player(message, guild);
                     else 
-                        message.channel.send(`>>> 👍 **${songInfo.title}** added to queue! 👍`);
+                        message.channel.send({embeds: [embedMessage.setDescription(`👍 **${songInfo.title}** added to queue! 👍`)]});
                     return;
                 }
             },
@@ -71,7 +77,7 @@ module.exports = {
                     if (player.state.status === 'playing' && !guildInfo.pause) {
                         player.pause();
                         guildInfo.pause = true;
-                        return message.channel.send(`>>> ✋ Song paused ✋`);
+                        return message.channel.send({embeds: [embedMessage.setDescription(`✋ Song paused ✋`)]});
                     }
                 }
             },
@@ -81,7 +87,7 @@ module.exports = {
                     if (player.state.status === 'paused' && guildInfo.pause) {
                         player.unpause();
                         guildInfo.pause = false;
-                        return message.channel.send(`>>> ▶️ Song resumed ▶️`);
+                        return message.channel.send({embeds: [embedMessage.setDescription(`▶️ Song resumed ▶️`)]});
                     }
                 }
             },
@@ -89,13 +95,13 @@ module.exports = {
             'stop': () => {
                 if (guildInfo) {
                     player.stop();
-                    return message.channel.send(`>>> ⛔ Song stoped ⛔`);
+                    return message.channel.send({embeds: [embedMessage.setDescription(`⛔ Song stoped ⛔`)]});
                 }
             },
             
             'skip': () => {
                 if (guildInfo && guildInfo.songs.length != 0) {
-                    message.channel.send(`>>> ⏭️ Skipping song ⏭️`);
+                    message.channel.send({embeds: [embedMessage.setDescription(`⏭️ Skipping song ⏭️`)]});
                     audio_player(message, guild);
                 } else {
                     message.reply(`>>> 😥 There's no more songs 😥`);
@@ -114,7 +120,7 @@ module.exports = {
                             }
                             audio_player(message, guild);
                         } else {
-                            message.reply(`>>> 🛑 Give a valid playlist position 🛑`);
+                            message.reply({embeds: [embedMessage.setDescription(`🛑 Give a valid playlist position 🛑`)]});
                         }
                     }
                     if (songsQueue.length != 0) {
@@ -122,9 +128,9 @@ module.exports = {
                         songsQueue.forEach((song, index) => {
                             text += `#${index+1} - ${song.title}\n`;
                         });
-                        message.channel.send(`>>> *_*_*_*_*_*_*_*_*_*_*_*_*__**Songs Queue**__*_*_*_*_*_*_*_*_*_*_*_*_* \n\n${text}`);
+                        message.channel.send({embeds: [embedMessage.setDescription(`*_*_*_*_*_*_*_*_*_*_*_*_*__**Songs Queue**__*_*_*_*_*_*_*_*_*_*_*_*_* \n\n${text}`)]});
                     } else {
-                        message.reply(`>>> 🙅 The song queue is empty 🙅`);
+                        message.reply({embeds: [embedMessage.setDescription(`🙅 The song queue is empty 🙅`)]});
                     }
                 }
                 return;
@@ -172,7 +178,7 @@ module.exports = {
         if (video) {
             return song = {title: video.title, url: video.url}
         } else {
-            message.channel.send(`>>> Error finding the video.`);
+            message.channel.send({embeds: [embedMessage.setDescription(`Error finding the video.`)]});
         }
     }
 }
@@ -187,6 +193,6 @@ const audio_player = async (message, guild) => {
         const resource = createAudioResource(stream);
         player.play(resource);
 
-        message.channel.send(`>>> 🎶 Now playing **${song.title}** 🎶`);
+        message.channel.send({embeds: [embedMessage.setDescription(`🎶 Now playing **${song.title}** 🎶`)]});
     }
 }

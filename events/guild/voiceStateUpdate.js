@@ -1,5 +1,5 @@
 const {getVoiceConnection} = require("@discordjs/voice");
-const { MessageEmbed } = require('discord.js');
+const {MessageEmbed} = require('discord.js');
 
 const guilds = new Map();
 
