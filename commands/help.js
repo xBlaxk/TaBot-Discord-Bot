@@ -4,7 +4,7 @@ const embedMessage = new MessageEmbed()
 .setColor('#0099ff')
 .setTitle('')
 .setDescription('Some description here')
-.setThumbnail('https://i.imgur.com/8g4U8tu.png');
+.setThumbnail('https://i.imgur.com/Zgfdjkd.png');
 
 module.exports = {
     name: "help",

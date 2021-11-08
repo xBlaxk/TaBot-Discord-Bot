@@ -4,7 +4,7 @@ const embedMessage = new MessageEmbed()
 .setColor('#0099ff')
 .setTitle('Voice Channel Update')
 .setDescription('Some description here')
-.setThumbnail('https://i.imgur.com/6DafL6d.png');
+.setThumbnail('https://i.imgur.com/bIGAJ17.png');
 
 /* 
     client.commands.get("leave").execute(message) // copy to leave

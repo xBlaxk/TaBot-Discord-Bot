@@ -4,7 +4,7 @@ const embedMessage = new MessageEmbed()
 .setColor('#0099ff')
 .setTitle('Voice Channel Update')
 .setDescription('Some description here')
-.setThumbnail('https://i.imgur.com/eEFapTb.png');
+.setThumbnail('https://i.imgur.com/bFTxsre.png');
 
 /* 
     client.commands.get("join").execute(message) // copy to join

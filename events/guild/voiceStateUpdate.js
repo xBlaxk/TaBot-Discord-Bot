@@ -35,13 +35,13 @@ module.exports = (client, Discord, oldState, newState) => {
          // Send message about who joined a voice channel
          if (newState.channelId != null && oldState.channelId != null) {
             // newState.guild.channels.cache.get(guilds.get(newState.guild.id).inOutChat).send(`>>> <@${newState.id}> switched from ${newState.guild.channels.cache.get(oldState.channelId)} to ${newState.guild.channels.cache.get(oldState.channelId)}`);
-            newState.guild.channels.cache.get(guilds.get(newState.guild.id).inOutChat).send({embeds: [embedMessage.setDescription(`<@${newState.id}> switched from ${newState.guild.channels.cache.get(oldState.channelId)} to ${newState.guild.channels.cache.get(oldState.channelId)}`).setThumbnail('https://imgur.com/GM42bcQ.png')]});
+            newState.guild.channels.cache.get(guilds.get(newState.guild.id).inOutChat).send({embeds: [embedMessage.setDescription(`<@${newState.id}> switched from ${newState.guild.channels.cache.get(oldState.channelId)} to ${newState.guild.channels.cache.get(oldState.channelId)}`).setThumbnail('https://i.imgur.com/d5bP67n.png')]});
          } else {
-            newState.guild.channels.cache.get(guilds.get(newState.guild.id).inOutChat).send({embeds: [embedMessage.setDescription(`<@${newState.id}> joined ${newState.guild.channels.cache.get(newState.channelId)}`).setThumbnail('https://imgur.com/eEFapTb.png')]});
+            newState.guild.channels.cache.get(guilds.get(newState.guild.id).inOutChat).send({embeds: [embedMessage.setDescription(`<@${newState.id}> joined ${newState.guild.channels.cache.get(newState.channelId)}`).setThumbnail('https://i.imgur.com/bFTxsre.png')]});
          }
       } else { // Execute when leaving a voice channel
          // Send message about who joined a voice channel
-         oldState.guild.channels.cache.get(guilds.get(oldState.guild.id).inOutChat).send({embeds: [embedMessage.setDescription(`<@${oldState.id}> joined ${oldState.guild.channels.cache.get(oldState.channelId)}`).setThumbnail('https://imgur.com/6DafL6d.png')]});
+         oldState.guild.channels.cache.get(guilds.get(oldState.guild.id).inOutChat).send({embeds: [embedMessage.setDescription(`<@${oldState.id}> joined ${oldState.guild.channels.cache.get(oldState.channelId)}`).setThumbnail('https://i.imgur.com/bIGAJ17.png')]});
       }
    }
 }
