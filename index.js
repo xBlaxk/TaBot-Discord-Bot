@@ -1,7 +1,6 @@
 //Requires nodes
 const {Client, Intents} = require("discord.js"); 
 const Discord = require('discord.js');
-const config = require("./settings.json");
 
 //Bot Intents
 const myIntents = new Intents(); // Declare and incialize myIntents with a null Intents class
@@ -20,5 +19,8 @@ handlers.forEach((handler) => {
     require(`./handlers/${handler}`)(client, Discord);
 });
 
+
+
 // Logs the client in, establishing a websocket connection to Discord
-client.login(config.token);
+// client.login(config.token);
+client.login(process.env.botToken);
