@@ -1,5 +1,5 @@
 //Requires nodes
-const {Client, Intents} = require("discord.js"); 
+const {Client, Intents} = require('discord.js'); 
 const Discord = require('discord.js');
 
 //Bot Intents
