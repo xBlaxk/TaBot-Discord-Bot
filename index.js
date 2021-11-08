@@ -19,8 +19,5 @@ handlers.forEach((handler) => {
     require(`./handlers/${handler}`)(client, Discord);
 });
 
-
-
 // Logs the client in, establishing a websocket connection to Discord
-// client.login(config.token);
-client.login(process.env.botToken);
+client.login(process.env.botToken); //Get bot token from heroku variables

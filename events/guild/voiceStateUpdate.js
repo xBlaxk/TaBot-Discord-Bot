@@ -1,14 +1,13 @@
 const {getVoiceConnection} = require("@discordjs/voice");
 const {MessageEmbed} = require('discord.js');
-
 const guilds = new Map();
+const embedMessage = new MessageEmbed()
+.setColor('#0099ff')
+.setTitle('Voice Channel Update')
+.setDescription('Some description here')
+.setThumbnail('https://imgur.com/6DafL6d');
 
 module.exports = (client, Discord, oldState, newState) => {
-   const embedMessage = new MessageEmbed()
-	.setColor('#0099ff')
-	.setTitle('Voice Channel Update')
-	.setDescription('Some description here')
-	.setThumbnail('https://imgur.com/6DafL6d');
 
    if (!guilds.get(newState.guild.id)) {
       const guildConstructor = {
